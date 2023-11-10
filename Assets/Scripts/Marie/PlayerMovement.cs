@@ -9,13 +9,15 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float upGravity = 1f, downGravity = 5f;
     [SerializeField] private LayerMask groundLayers;
     [SerializeField] private Transform feet;
-
+    [SerializeField] private Checkpoint checkpoint;
 
     private Rigidbody2D _rigidbody;
     private Animator _animator;
     private SpriteRenderer _spriteRenderer;
     private SoundPlayer _audioPlayer;
 
+    private LayerMask voidLayer;
+    private Collider2D _holeCollider;
 
     private float horizontalMovement = 0;
     private bool jump = false, isGrounded = false;
@@ -26,6 +28,7 @@ public class PlayerMovement : MonoBehaviour
         _animator = GetComponent<Animator>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _audioPlayer = GetComponent<SoundPlayer>();
+        voidLayer = LayerMask.NameToLayer("Void");
     }
 
     void Update()
@@ -74,11 +77,28 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
+        if (collision.gameObject.layer == groundLayers)
         {
             isGrounded = true;
             _animator.SetBool("Jump", false);
             _rigidbody.gravityScale = upGravity;
+        } 
+        else if(collision.gameObject.layer == voidLayer)
+        {
+            collision.collider.isTrigger = true;
+            GetComponent<PlayerLife>().Hurt(1);
+            Invoke("Respawn", 1f);
+            _holeCollider = collision.collider;
+        }
+    }
+
+    public void Respawn()
+    {
+        transform.position = checkpoint.transform.position;
+        if(_holeCollider != null)
+        {
+            _holeCollider.isTrigger = false;
+            _holeCollider = null;
         }
     }
 
@@ -101,6 +121,11 @@ public class PlayerMovement : MonoBehaviour
             _animator.SetBool("Jump", true);
             _rigidbody.gravityScale = downGravity;
         }
+    }
+
+    public void ChangeCheckpoint(Checkpoint newCheckpoint)
+    {
+        checkpoint = newCheckpoint;
     }
 
 

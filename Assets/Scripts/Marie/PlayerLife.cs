@@ -1,10 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerLife : MonoBehaviour
 {
-    private int _life = 3;
+    [SerializeField] private Image lifeUI;
+    [SerializeField] private int maxLife = 5;
+    private int _life;
     private Animator _animator;
     private SoundPlayer _audioPlayer;
 
@@ -12,6 +13,7 @@ public class PlayerLife : MonoBehaviour
     {
         _animator = GetComponent<Animator>();
         _audioPlayer = GetComponent<SoundPlayer>();
+        _life = maxLife;
     }
 
     public void Hurt(int damage)
@@ -19,10 +21,17 @@ public class PlayerLife : MonoBehaviour
         _life -= damage;
         _animator.SetTrigger("Hurt");
         _audioPlayer.PlayAudio(SoundFX.Hurt);
+        UpdateUI();
     }
 
     public void Heal(int heal)
     {
         _life += heal;
+        UpdateUI();
+    }
+
+    private void UpdateUI()
+    {
+        lifeUI.fillAmount = (float)_life / maxLife;
     }
 }

@@ -55,7 +55,7 @@ public class PlayerInventory : MonoBehaviour
 
     public bool IsInInventory(string itemName)
     {
-        return items.Find(item => item.displayName == itemName) != null;
+        return items.Find(item => item.uniqueID == itemName) != null;
     }
 
     public List<Item> GetInventory()

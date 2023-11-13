@@ -7,9 +7,7 @@ public class PlayerInventory : MonoBehaviour
 {
     private const int MAX_INVENTORY = 10;
 
-    // A dictionary is a type of data container that matches a unique object (called key) to another value.
-    // The key and the value can be of different types
-    private Dictionary<Item, int> items = new Dictionary<Item, int>();
+    private List<Item> items = new List<Item>();
 
     //static is a keyword used to store a value across all of the instances of a class
     //That means that every new object of this type will share this value
@@ -23,39 +21,44 @@ public class PlayerInventory : MonoBehaviour
         Instance = this;
     }
 
-    public void AddItemToInventory(Item newItem)
+    private void Start()
+    {
+        InventoryUI.Instance.UpdateUI();
+    }
+
+    //Returns true if the item was successfully added, false otherwise
+    public bool AddItemToInventory(Item newItem)
     {
         if (items.Count < MAX_INVENTORY)
         {
-            if (items.ContainsKey(newItem))
-            {
-                items[newItem] += 1;
-            }
-            else
-            {
-                items.Add(newItem, 1);
-            }
+            items.Add(newItem);
+            InventoryUI.Instance.UpdateUI();
+            return true;
         }
         else
         {
-            Debug.LogWarning("Oh oh, this inventory can only hold 10 different item types...");
+            Debug.LogWarning("Oh oh, this inventory can only hold 10 different items...");
+            return false;
         }
     }
 
     public void RemoveItemFromInventory(Item oldItem, int quantity) {
-        if (items.ContainsKey(oldItem)){
-            if (items[oldItem] <= quantity)
-            {
-                items.Remove(oldItem);
-            }
-            else
-            {
-                items[oldItem] -= quantity;
-            }
+        if (items.Contains(oldItem)){
+            items.Remove(oldItem);
         }
     }
 
-    public Dictionary<Item, int> GetInventory()
+    public bool IsInInventory(Item item)
+    {
+        return items.Contains(item);
+    }
+
+    public bool IsInInventory(string itemName)
+    {
+        return items.Find(item => item.displayName == itemName) != null;
+    }
+
+    public List<Item> GetInventory()
     {
         return items;
     }

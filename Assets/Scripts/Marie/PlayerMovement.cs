@@ -66,6 +66,7 @@ public class PlayerMovement : MonoBehaviour
         if (jump)
         {
             _rigidbody.AddForce(new Vector2(0, _jumpStrength), ForceMode2D.Impulse);
+            _rigidbody.gravityScale = upGravity;
             jump = false;
         }
 
@@ -125,6 +126,10 @@ public class PlayerMovement : MonoBehaviour
 
     public void ChangeCheckpoint(Checkpoint newCheckpoint)
     {
+        if (checkpoint != newCheckpoint)
+        {
+            Destroy(checkpoint.gameObject);
+        }
         checkpoint = newCheckpoint;
     }
 

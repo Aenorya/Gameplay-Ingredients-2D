@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEditor.Progress;
 
 public class PlayerInventory : MonoBehaviour
 {
@@ -42,10 +43,20 @@ public class PlayerInventory : MonoBehaviour
         }
     }
 
-    public void RemoveItemFromInventory(Item oldItem, int quantity) {
+    public void RemoveItemFromInventory(Item oldItem) {
         if (items.Contains(oldItem)){
             items.Remove(oldItem);
         }
+    }
+
+    public void RemoveItemFromInventory(string oldItemName)
+    {
+        Item oldItem = items.Find(item => item.uniqueID == oldItemName);
+        if (oldItem != null)
+        {
+            items.Remove(oldItem);
+        }
+        InventoryUI.Instance.UpdateUI();
     }
 
     public bool IsInInventory(Item item)

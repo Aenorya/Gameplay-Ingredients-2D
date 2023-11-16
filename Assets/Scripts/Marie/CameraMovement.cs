@@ -35,7 +35,7 @@ public class CameraMovement : MonoBehaviour
         {
             y = Mathf.Clamp(target.transform.position.y, minPosition.y, maxPosition.y);
         }
-        else if (Mathf.Abs(transform.position.x - target.transform.position.x) > 0.1f)
+        else if (Mathf.Abs(transform.position.y - target.transform.position.y) > 0.1f)
         {
             y = target.transform.position.y;
         }

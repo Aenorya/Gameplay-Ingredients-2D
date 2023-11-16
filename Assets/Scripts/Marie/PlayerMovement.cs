@@ -8,7 +8,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float _jumpStrength = 8f;
     [SerializeField] private float upGravity = 1f, downGravity = 5f;
     [SerializeField] private LayerMask groundLayers;
-    [SerializeField] private Transform feet;
+    [SerializeField] private Transform feet, headTop;
     [SerializeField] private Checkpoint checkpoint;
 
     private Rigidbody2D _rigidbody;
@@ -59,10 +59,12 @@ public class PlayerMovement : MonoBehaviour
             _animator.SetBool("Jump", true);
             _audioPlayer.PlayAudio(SoundFX.Jump);
         }
+        
     }
 
     private void FixedUpdate()
     {
+        
         if (jump)
         {
             _rigidbody.AddForce(new Vector2(0, _jumpStrength), ForceMode2D.Impulse);
@@ -73,6 +75,10 @@ public class PlayerMovement : MonoBehaviour
         if (!isGrounded && _rigidbody.velocity.y < 0)
         {
             _rigidbody.gravityScale = downGravity;
+        }
+        else if (_rigidbody.velocity.y > 0)
+        {
+            CheckPlatformAbove();
         }
     }
 
@@ -121,6 +127,30 @@ public class PlayerMovement : MonoBehaviour
             isGrounded = false;
             _animator.SetBool("Jump", true);
             _rigidbody.gravityScale = downGravity;
+        }
+    }
+
+    private void CheckPlatformAbove()
+    {
+        RaycastHit2D hit = Physics2D.Raycast(headTop.position, transform.up, 0.3f, groundLayers);
+        if (hit)
+        {
+            GetComponent<Collider2D>().enabled = false;
+            InvokeRepeating("CheckForFalldown", 0, Time.fixedDeltaTime);
+        }
+    }
+
+    private void CheckForFalldown()
+    {
+        //Am I still just below a platform ?
+        RaycastHit2D hit = Physics2D.Raycast(headTop.position, transform.up, 0.1f, groundLayers);
+        //If not, is my head still inside a platform ?
+        if(!hit) hit = Physics2D.Raycast(headTop.position, -transform.up, 1f, groundLayers);
+        //If any of these is true, don't activate the collider just yet !
+        if (_rigidbody.velocity.y < 0 && !hit)
+        {
+            GetComponent<Collider2D>().enabled = true;
+            CancelInvoke("CheckForFalldown");
         }
     }
 

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+    public static PlayerMovement instance;
     [SerializeField] private float _speed = 5f;
     [SerializeField] private float _jumpStrength = 8f;
     [SerializeField] private float upGravity = 1f, downGravity = 5f;
@@ -24,6 +25,7 @@ public class PlayerMovement : MonoBehaviour
     
     void Awake()
     {
+        instance = this;
         _rigidbody = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
